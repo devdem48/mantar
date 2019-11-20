@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Başlıksız Belge</title>
+</head>
+
+<body>
+  <input id="image-selector" type="file"  />
+  <button id="predict-button"> Tahmin Et</button>
+  <p style="font-weight:bold"> TAHMİNLER </p>
+  <P>Yenebilir: <span id="yenebilir-tahmin"></span></p>
+  <P>Zehirli: <span id="zehirli-tahmin"></span></p>
+  <img id="selected-image" src=""/>
+  
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script>
+       let base64Image;
+	   $("image-selector").change(function(){
+		   let reader = new FileReader();
+		   reader.onload=function(e) {
+			   let dataURL= reader.result;
+			   $('#selected-image').attr("src",dataURL);
+			   base64Image=dataURL.replace("data:image/png:base64,","");
+			   console.log(base64Image);
+		   }
+		   reader.readAsDataURL($("#image-selector")[0].files[0]);
+		   $("yenebilir-tahmin").text("");
+		   $("zehirli-tahmin").text("");
+	   });
+	   
+	   $("predict-button").click(function(){
+		   let message={
+			   image:base64Image
+		   }
+		   console.log(message);
+		   $.post("http://127.0.0.1:5000/predict",JSON.stringify(message),function(response){
+			   $("#"yenebilir-tahmin").text(response.prediction.yenebilir.toFixed(6));
+               $("#"zehirli-tahmin").text(response.prediction.zehirli.toFixed(6));
+			   console.log(response);
+		   });
+	}); 
+  </script>
+</body>
+</html>
